@@ -1,4 +1,4 @@
-######Boston Housing Web Application
+###Boston Housing Web Application
 
 The system relies on a combination of technologies for its functionality. We've utilized JavaScript, HTML, and CSS for the front-end development, while MySQL serves as the backbone for the database management. To establish seamless communication between the database and front-end interface, we've leveraged the power of JavaScript, particularly through Node.js, which facilitates efficient connections and data handling. This Housing Application is designed to streamline the process of finding, listing, and managing properties for rent or sale. It serves as a centralised platform for property seekers, and brokers to interact and conduct real estate transactions with ease.
 
@@ -26,7 +26,7 @@ After package.json file has been created then type npm install to install the re
 Then go to the Frontend folder and open index.html directly by clicking it, this will open the sign up page and then you can access the application through this page by signing up, logging in and moving further in the application.
 The server.js has database name as boston_housing_project so make sure you have created this project schema in your database. And the localhost is used as the server.
 
-######TOP LEVEL DESCRIPTION OF PROJECT
+###TOP LEVEL DESCRIPTION OF PROJECT
 
 In this project we aim to develop a comprehensive real estate management
 system mainly for the students community of Boston.
@@ -73,3 +73,15 @@ The property details such as buying date, or leasing start date end date, rent,
 lease tenure , are also monitored once a property has been bought or rented
 by the property seeker. The property seeker and property contact (broker) can
 do all these operations using the website.
+
+###Contributing
+welcome contributions to the project! Please follow these guidelines:
+
+Fork the repository
+Create a new branch for your feature or bug fix
+Make your changes and commit them
+Open a pull request
+For detailed contributing guidelines, refer to the CONTRIBUTING.md file.
+
+###License
+This project is licensed under the MIT License - see the LICENSE file for details.
