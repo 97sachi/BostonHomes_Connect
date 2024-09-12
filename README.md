@@ -1,4 +1,4 @@
-Boston Housing Web Application
+######Boston Housing Web Application
 
 The system relies on a combination of technologies for its functionality. We've utilized JavaScript, HTML, and CSS for the front-end development, while MySQL serves as the backbone for the database management. To establish seamless communication between the database and front-end interface, we've leveraged the power of JavaScript, particularly through Node.js, which facilitates efficient connections and data handling. This Housing Application is designed to streamline the process of finding, listing, and managing properties for rent or sale. It serves as a centralised platform for property seekers, and brokers to interact and conduct real estate transactions with ease.
 
@@ -25,3 +25,51 @@ After package.json file has been created then type npm install to install the re
 
 Then go to the Frontend folder and open index.html directly by clicking it, this will open the sign up page and then you can access the application through this page by signing up, logging in and moving further in the application.
 The server.js has database name as boston_housing_project so make sure you have created this project schema in your database. And the localhost is used as the server.
+
+######TOP LEVEL DESCRIPTION OF PROJECT
+
+In this project we aim to develop a comprehensive real estate management
+system mainly for the students community of Boston.
+
+This system facilitates the buying, renting and selling of properties by property
+seeker and property broker/contact. The users can register to the platform as
+a property contact or a property seeker.
+
+The platform provides property seekers with a platform to search for
+properties based on various criteria such as area, near a university, price,
+number of bedrooms , bathrooms, and property type.
+
+User can also request view of property, give reviews to a property, and apply for
+buying/rent once they have been approved of their request.
+Also, they can additionally, view an area details like amenities, crimes in an area,
+property amenities.
+
+The broker / property contact lists the property details along with the amenities.
+The brokers or the property contact person contacts the property seeker
+(buyer/renter) for further inquiries after the request to view property has been
+made by the property seeker. Property seeker lets the broker know the intent of
+buying/renting the property after viewing of property is complete. Also the broker
+marks the request to view is complete.
+
+Users can also leave reviews for properties.
+Brokers can manage the listing of property based on the property being bought or
+rented by a property seeker or is still available, which implies the property contact
+can update and delete any property from the list of properties.
+
+Here, we consider a system where brokers are working under a house leasing and
+selling firm, where any broker is assigned to list properties, any broker is similarly
+assigned by the firm to update property details or delete property from the listings.
+So, there is no relation required between a broker and property. As, brokers work to
+add , update, delete the properties and are associated to complete request related
+to property viewing that is assigned to them based on the number of clients with a
+broker.
+
+The property contact handles the request of a property seeker. Broker also
+accepts the requests of property seeker who applied for property viewing, note
+the intent of seeker and accept or reject the request of buying or renting a
+property.
+
+The property details such as buying date, or leasing start date end date, rent,
+lease tenure , are also monitored once a property has been bought or rented
+by the property seeker. The property seeker and property contact (broker) can
+do all these operations using the website.
