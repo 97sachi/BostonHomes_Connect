@@ -1,3 +1,5 @@
+#Boston Housing Web Application#
+
 The system relies on a combination of technologies for its functionality. We've utilized JavaScript, HTML, and CSS for the front-end development, while MySQL serves as the backbone for the database management. To establish seamless communication between the database and front-end interface, we've leveraged the power of JavaScript, particularly through Node.js, which facilitates efficient connections and data handling. This Housing Application is designed to streamline the process of finding, listing, and managing properties for rent or sale. It serves as a centralised platform for property seekers, and brokers to interact and conduct real estate transactions with ease.
 
 User : Property Seeker Property Broker
