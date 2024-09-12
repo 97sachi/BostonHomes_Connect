@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Seeker Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            background-image: url('side1.png'), url('side2.jpeg');
+            background-position: left top, right top;
+            background-repeat: no-repeat;
+            background-size: auto 100vh, auto 100vh;
+        }
+
+        /* .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+        } */
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        .header {
+            display: flex;
+            background-color: #f2f2f2;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .option {
+            cursor: pointer;
+        }
+
+        .option:hover {
+            text-decoration: underline;
+        }
+
+        .filters {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+        }
+
+        .filter-option {
+            margin-bottom: 20px;
+        }
+
+        .filter-option button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-option button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-option input[type="text"],
+        .filter-option input[type="number"],
+        .filter-option input[type="date"] {
+            width: calc(100% - 80px);
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .description {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .filter-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .filter-form.active {
+            display: block;
+        }
+
+        .filter-form input[type="text"],
+        .filter-form input[type="number"],
+        .filter-form input[type="date"] {
+            width: calc(100% - 80px);
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .filter-form button {
+            width: calc(100% - 20px);
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover {
+            background-color: #273027;
+        }
+
+        .filter-form .submit-button {
+            background-color: #2196F3;
+            /* Different color for the submit button */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="option button" onclick="window.location.href='areadetails.html'">Get Area Details</div>
+        <div class="option button" onclick="window.location.href='universitydetails.html'">Get University Details</div>
+
+
+            <button id="logout-button" class = "button">Logout</button>
+
+    </div>
+
+    <div class="filters">
+        <div class="filter-option" id="nearby-university">
+            <button onclick="showTextField('university')">Filter by Nearby University</button>
+            <div class="filter-form" id="university-textfield" style="display: none;">
+                <input type="text" id = "university-name" placeholder="Enter University Name">
+                <button class="submit-button" onclick="submitUniversityForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="property-type">
+            <button onclick="showTextField('propertyType')">Filter by Property Type</button>
+            <div class="filter-form" id="propertyType-textfield" style="display: none;">
+                <input type="text" id = "type" placeholder="Enter Property Type">
+                <button class="submit-button" onclick="submitTypeForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="price-range">
+            <button onclick="showPriceFields()">Filter Property by Price Range</button>
+            <div class="filter-form" id="price-range-fields" style="display: none;">
+                <input type="number" id = "lowerRange" placeholder="Starting Price">
+                <input type="number" id = "upperRange" placeholder="Higher Price">
+                <button class="submit-button" onclick="submitPriceForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="bathrooms">
+            <button onclick="showTextField('bathrooms')">Filter Property by Bathrooms</button>
+            <div class="filter-form" id="bathrooms-textfield" style="display: none;">
+                <input type="number" id = "bathrooms-input" placeholder="Enter Number of Bathrooms">
+                <button class="submit-button" onclick="submitBathroomForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="bedrooms">
+            <button onclick="showTextField('bedrooms')">Filter Property by Bedrooms</button>
+            <div class="filter-form" id="bedrooms-textfield" style="display: none;">
+                <input type="number" id = "bedrooms-input" placeholder="Enter Number of Bedrooms">
+                <button class="submit-button" onclick="submitBedroomForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="bedrooms-bathrooms">
+            <button onclick="showBedroomsBathroomsFields()">Filter Property by Bedrooms and Bathrooms</button>
+            <div class="filter-form" id="bedrooms-bathrooms-fields" style="display: none;">
+                <input type="number" id = "bedrooms1" placeholder="Enter Number of Bedrooms">
+                <input type="number" id = "bathrooms1"placeholder="Enter Number of Bathrooms">
+                <button class="submit-button" onclick="submitBedAndBathForm()">Submit</button>
+            </div>
+        </div>
+
+        <div class="filter-option" id="application-status">
+            <button onclick="viewApplicationStatus()">View Application Status, after Requesting View</button>
+        </div>
+
+    </div>
+
+    <script>
+        function showTextField(field) {
+            const textField = document.getElementById(`${field}-textfield`);
+            if (textField.style.display === 'none') {
+                textField.style.display = 'block';
+            } else {
+                textField.style.display = 'none';
+            }
+        }
+
+        function submitUniversityForm() {
+            const universityName = document.getElementById('university-name').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByUniversity.html?university=${encodeURIComponent(universityName)}`;
+        }
+
+        function submitTypeForm() {
+            const typeName = document.getElementById('type').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByType.html?type=${encodeURIComponent(typeName)}`;
+        }
+
+        function submitBedroomForm() {
+            const bedrooms = document.getElementById('bedrooms-input').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByBedrooms.html?bedrooms=${encodeURIComponent(bedrooms)}`;
+        }
+
+        function submitBathroomForm() {
+            const bathrooms = document.getElementById('bathrooms-input').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByBathrooms.html?bathrooms=${encodeURIComponent(bathrooms)}`;
+        }
+
+        function submitPriceForm() {
+            const upperRange = document.getElementById('upperRange').value;
+            const lowerRange = document.getElementById('lowerRange').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByPrice.html?lowerRange=${encodeURIComponent(lowerRange)}&upperRange=${encodeURIComponent(upperRange)}`;
+        }
+
+        function submitBedAndBathForm() {
+            const bedrooms = document.getElementById('bedrooms1').value;
+            const bathrooms = document.getElementById('bathrooms1').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByBedAndBath.html?bedrooms=${encodeURIComponent(bedrooms)}&bathrooms=${encodeURIComponent(bathrooms)}`;
+        }
+
+        function submitAmenitiesForm() {
+            const amenities = document.getElementById('amenities').value;
+            // Redirect to filterByUniversity.html with form data as URL parameters
+            window.location.href = `propertyByAmenity.html?amenity=${encodeURIComponent(amenities)}`;
+        }
+
+        function showPriceFields() {
+            const priceFields = document.getElementById('price-range-fields');
+            if (priceFields.style.display === 'none') {
+                priceFields.style.display = 'flex';
+            } else {
+                priceFields.style.display = 'none';
+            }
+        }
+
+        function showBedroomsBathroomsFields() {
+            const bedroomsBathroomsFields = document.getElementById('bedrooms-bathrooms-fields');
+            if (bedroomsBathroomsFields.style.display === 'none') {
+                bedroomsBathroomsFields.style.display = 'flex';
+            } else {
+                bedroomsBathroomsFields.style.display = 'none';
+            }
+        }
+
+        // Function to show input fields for property view request
+        function showPropertyViewFields() {
+            const propertyViewFields = document.getElementById('property-view-fields');
+            if (propertyViewFields.style.display === 'none') {
+                propertyViewFields.style.display = 'flex';
+            } else {
+                propertyViewFields.style.display = 'none';
+            }
+        }
+
+        function showBuyingFields() {
+            const buyingFields = document.getElementById('buying-fields');
+            if (buyingFields.style.display === 'none') {
+                buyingFields.style.display = 'flex';
+            } else {
+                buyingFields.style.display = 'none';
+            }
+        }
+
+        function showRentingFields() {
+            const rentingFields = document.getElementById('renting-fields');
+            if (rentingFields.style.display === 'none') {
+                rentingFields.style.display = 'flex';
+            } else {
+                rentingFields.style.display = 'none';
+            }
+        }
+
+
+        function viewApplicationStatus() {
+            window.location.href = `ApplicationStatus.html`;
+        }
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+
+        function toggleFilterForm(formId) {
+            const form = document.getElementById(`${formId}-form`);
+            form.classList.toggle('active');
+        }
+
+
+    </script>
+</body>
+
+</html>

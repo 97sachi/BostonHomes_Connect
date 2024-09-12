@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Properties</title>
+    <style>
+        /* Global styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Property card styles */
+        .property-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .property-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .property-card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .property-card .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .property-card .buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .property-card .buttons button {
+            margin-left: 10px;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .property-card .buttons button:hover {
+            background-color: #45a049;
+        }
+
+        .rent-button {
+            background-color: #2196F3;
+            /* Different color for the rent button */
+        }
+
+        .buy-button {
+            background-color: #FFC107;
+            /* Different color for the buy button */
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* CSS to style the buy form */
+        .buy-form {
+            position: absolute;
+            top: 40%;
+            left: 70%;
+            transform: translate(-50%, -50%);
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .buy-form h4 {
+            margin-top: 0;
+        }
+
+        .buy-form form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .buy-form label {
+            margin-bottom: 10px;
+        }
+
+        .buy-form input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        .buy-form button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .buy-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="property_seeker_page.html">Back to Property Seeker page</a>
+        <button class="button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="container" id="propertyResults"></div>
+
+    <script>
+        // Parse URL parameters to get form data
+        document.addEventListener('DOMContentLoaded', async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const typeName = urlParams.get('type');
+            const token = localStorage.getItem("token");
+
+            try {
+                const response = await fetch(`http://localhost:3001/property_type`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({ "type": typeName })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch filtered properties');
+                }
+                const responseData = await response.json();
+                await displayProperties(responseData.properties, token);
+            } catch (error) {
+                console.error("Error fetching filtered properties:", error);
+            }
+        });
+
+        async function displayProperties(properties, token) {
+            const propertyResults = document.getElementById('propertyResults');
+            propertyResults.innerHTML = ''; // Clear previous results
+
+            properties.forEach(async property => {
+                try {
+                    // Fetch approval status for the property
+                    const approvalStatusResponse = await fetch(`http://localhost:3001/${property.property_id}/approvalStatus`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "authorization": "Bearer " + token
+                        }
+                    });
+                    if (!approvalStatusResponse.ok) {
+                        throw new Error('Failed to fetch approval status');
+                    }
+                    const approvalStatusData = await approvalStatusResponse.json();
+
+                    const approvalStatus = approvalStatusData.approvalStatus;
+                    console.log(approvalStatus);
+
+                    const propertyCard = document.createElement('div');
+                    propertyCard.classList.add('property-card');
+                    const rentBuyButtonText = property.rent_buy === 'Rent' ? 'Rent Now' : 'Buy Now';
+                    const rentBuyButtonClass = property.rent_buy === 'Rent' ? 'rent-button' : 'buy-button';
+                    const disabledClass = approvalStatus !== 1 || property.is_available !== 1 ? 'disabled' : ''; // Disable button if approval status is not 0
+                    propertyCard.innerHTML = `
+                <h3>${property.property_type}</h3>
+                <p><strong>Property ID:</strong> ${property.property_id}</p>
+                <p><strong>Price:</strong> <span class="price">$${property.price}</span></p>
+                <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
+                <p><strong>Bathrooms:</strong> ${property.bathrooms}</p>
+                <p><strong>Square Footage:</strong> ${property.square_footage} sqft</p>
+                <p><strong>Year Built:</strong> ${property.year_built}</p>
+                <p><strong>Location:</strong> ${property.street_no} ${property.street_name}, ${property.city}, ${property.state}, ${property.country}</p>
+                <p><strong>Zip Code:</strong> ${property.zip_code}</p>
+                <p><strong>Is Available:</strong> ${property.is_available === 1 ? 'Yes' : 'No'}</p>
+                <p><strong>Area Code:</strong> ${property.areacode}</p>
+                <p><strong>Minimum Tenure:</strong> ${property.min_tenure}</p>
+                <!-- Inside the property card HTML -->
+<div class="buy-form" id="buy-form-${property.property_id}" style="display: none;">
+    <h4>Lease Details</h4>
+    <form id="lease-form-${property.property_id}">
+        <label for="start-date-${property.property_id}">Start Date:</label>
+        <input type="date" id="start-date-${property.property_id}" required><br>
+        <label for="end-date-${property.property_id}">End Date:</label>
+        <input type="date" id="end-date-${property.property_id}" required><br>
+        <button type="button" id="buy-submit-${property.property_id}">Submit</button>
+    </form>
+</div>
+
+                <div class="buttons">
+                    <button class="${rentBuyButtonClass} ${disabledClass}" ${disabledClass}>${rentBuyButtonText}</button>
+                    <button class="view-reviews" onclick="viewReviews(${property.property_id})">View Reviews</button>
+                    <button class="view-amenities" onclick="viewAmenities(${property.property_id})">View Amenities</button>
+                    <button class="give-review" onclick="giveReviews(${property.property_id})">Give Review</button>
+                    <button class="request-view" onclick="requestView(${property.property_id})">Request View</button>
+                </div>
+            `;
+                    propertyResults.appendChild(propertyCard);
+                    const buyButton = propertyCard.querySelector(`.buttons button.${rentBuyButtonClass}`);
+                    buyButton.addEventListener('click', () => {
+                        const buyForm = propertyCard.querySelector('.buy-form');
+                        buyForm.style.display = 'block';
+
+                        const buySubmitButton = propertyCard.querySelector(`#buy-submit-${property.property_id}`);
+                        buySubmitButton.addEventListener('click', async () => {
+                            const startDate = propertyCard.querySelector(`#start-date-${property.property_id}`).value;
+                            const endDate = propertyCard.querySelector(`#end-date-${property.property_id}`).value;
+                            try {
+                                const response = await fetch(`http://localhost:3001/${property.property_id}/buy`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "authorization": "Bearer " + token
+                                    },
+                                    body: JSON.stringify({ startDate, endDate })
+                                });
+                                if (!response.ok) {
+                                    throw new Error('Failed to buy property');
+                                }
+                                const responseData = await response.json();
+                                alert(responseData.message); // Show success message
+                                // refresh the page
+                                window.location.reload();
+                            } catch (error) {
+                                console.error("Error buying property:", error);
+                                alert('Failed to buy property. Please try again.'); // Show error message
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.error("Error fetching approval status:", error);
+                }
+            });
+        }
+
+
+        function viewReviews(propertyId) {
+            window.location.href = `viewReviews.html?propertyId=${propertyId}`;
+        }
+
+        function viewAmenities(propertyId) {
+            window.location.href = `viewAmenities.html?propertyId=${propertyId}`;
+        }
+
+        function giveReviews(propertyId) {
+            window.location.href = `giveReviews.html?propertyId=${propertyId}`;
+        }
+
+        function requestView(propertyId) {
+            window.location.href = `requestView.html?propertyId=${propertyId}`;
+        }
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+
+        // Inside the displayProperties function, attach event listener to buy button
+
+
+    </script>
+</body>
+
+</html>

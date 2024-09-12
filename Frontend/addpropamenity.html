@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Amenity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('addprop.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 10px;
+            width: 30%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: calc(100%);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+
+        .submit-button {
+            padding: 15px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #333;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        .form-group textarea {
+            width: calc(100%);
+            /* Adjust width as needed */
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            resize: vertical;
+            /* Allow vertical resizing */
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="broker_page.html">Back to Property Contact/Broker Main Page</a>
+        <button class="button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="form-container">
+        <h2>Add Property Amenities</h2>
+        <form id="add-property-form">
+            <!-- Property ID field -->
+            <div class="form-group">
+                <label for="property_id">Property ID:</label>
+                <input type="text" id="property_id" name="property_id" required>
+            </div>
+
+            <!-- Amenity Name field -->
+            <div class="form-group">
+                <label for="amenity_name">Amenity Name:</label>
+                <input type="text" id="amenity_name" name="amenity_name" required>
+            </div>
+
+            <!-- Amenity Description field -->
+            <div class="form-group">
+                <label for="amenity_description">Amenity Description:</label>
+                <textarea id="amenity_description" name="amenity_description" rows="4" cols="50" required></textarea>
+            </div>
+
+            <button type="submit" class="submit-button">Add Amenity</button>
+        </form>
+        <div id="error-message" style="color: red;"></div>
+        <div id="success-message" style="color: green;"></div>
+    </div>
+    <script>
+        document.getElementById("add-property-form").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const jsonData = {};
+
+            // Convert FormData to JSON
+            for (const [key, value] of formData.entries()) {
+                jsonData[key] = value;
+            }
+            const token = localStorage.getItem("token");
+
+            try {
+                // Send POST request to backend endpoint
+                const response = await fetch("http://localhost:3001/add-amenity", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                
+                    if (!response.ok) {
+                        const responseData = await response.json();
+                        // Display error message
+                        document.getElementById("error-message").innerText = responseData.message;
+                        // Clear success message
+                        document.getElementById("success-message").innerText = "";
+                    } else {
+                        // Clear error message
+                        document.getElementById("error-message").innerText = "";
+                        // Display success message
+                        document.getElementById("success-message").innerText = "Property amenity added successfully!";
+                        // Clear form fields
+                        document.getElementById("add-property-form").reset();
+                    }
+    
+
+
+            } catch (error) {
+                console.error("Error signing up:", error);
+            }
+        });
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+
+</html>

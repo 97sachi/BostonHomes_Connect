@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            background-image: url('side1.png'), url('side2.jpeg');
+            background-position: left top, right top;
+            background-repeat: no-repeat;
+            background-size: auto 100vh, auto 100vh;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        .header {
+            display: flex;
+            background-color: #f2f2f2;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <button class="button" onclick="window.location.href='property_seeker_page.html'">Back</button>
+        <button id="logout-button" class="button">Logout</button>
+    </div>
+
+    <div class="container" id="requestResults"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch(`http://localhost:3001/customer/requests`, {
+                    headers: {
+                        "authorization": "Bearer " + token
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests');
+                }
+                const requestsData = await response.json();
+                displayRequests(requestsData);
+            } catch (error) {
+                console.error("Error fetching requests:", error);
+            }
+        });
+
+        function displayRequests(requestsData) {
+            const requestResults = document.getElementById('requestResults');
+            requestResults.innerHTML = ''; // Clear previous results
+
+            requestsData.forEach(request => {
+                const requestCard = document.createElement('div');
+                requestCard.classList.add('card');
+                const requestDate = new Date(request.request_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const requestStatus = request.request_status.charAt(0).toUpperCase() + request.request_status.slice(1);
+                requestCard.innerHTML = `
+            <h3>Request for Property ID: ${request.property_identifier}</h3>
+            <p><strong>Date:</strong> ${requestDate}</p>
+            <p><strong>Status:</strong> ${requestStatus}</p>
+            <p><strong>Broker:</strong> ${request.broker_name}</p>
+        `;
+                requestResults.appendChild(requestCard);
+            });
+        }
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+
+    </script>
+</body>
+
+</html>

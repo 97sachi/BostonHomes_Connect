@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Page</title>
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            background-image: url('brokerhome.jpeg');
+            background-repeat: repeat;
+            background-size: auto 100vh, auto 100vh;
+        }
+
+        .header {
+            display: flex;
+            background-color: #f2f2f2;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .option {
+            cursor: pointer;
+        }
+
+        .option:hover {
+            text-decoration: underline;
+        }
+
+        .filters {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-option {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .filter-option input[type="text"],
+        .filter-option input[type="number"],
+        .filter-option input[type="date"],
+        .filter-option select {
+            width: 300px;
+            padding: 5px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .filter-option button {
+            padding: 15px 15px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-option button:hover {
+            background-color: #45a049;
+        }
+
+        .description {
+            margin-bottom: 1px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .checkbox-label {
+            display: inline-block;
+            margin-right: 10px;
+        
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="option" onclick="window.location.href='addprop.html'">Add Property </div>
+        <div class="option" onclick="window.location.href='updateprop.html'">Update Property Details</div>
+        <div class="option" onclick="window.location.href='deleteprop.html'">Delete Property</div>
+        <div class="option" onclick="window.location.href='viewrequests.html'">View Property Requests</div>
+        <div class="option" onclick="window.location.href='addpropamenity.html'">Add Property Amenities</div>
+        <div class="form-container">
+            
+            <button id="logout-button">Logout</button>
+        </div>
+    
+    </div>
+
+    <div class="filters">
+        <div class="filter-option" id="request">
+            <button onclick="showTextField('request')">Update View Property Request</button>
+            <div id="request-textfield" style="display: none;">
+                <input type="text" placeholder="Enter Property ID" style="margin-top: 10px;" ><br>
+                <input type="text" placeholder="Enter Customer ID" style="margin-top: 10px;"><br>
+                <textarea placeholder="Enter Intent" rows="6" cols="40" style="margin-top: 10px;"></textarea><br>
+                <div style="margin-top: 10px;">
+                    <label for="is-complete">Is Complete:</label>
+                    <input type="checkbox" id="is-complete" style="transform: scale(2); margin-right: 10px;">
+                </div>
+                <select style="margin-top: 10px;">
+                    <option value="1">Approve Request</option>
+                    <option value="-1">Reject Request</option>
+                </select>
+                <button style="margin-top: 10px;">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+
+    <script>
+        function showTextField(field) {
+            const textField = document.getElementById(`${field}-textfield`);
+            if (textField.style.display === 'none') {
+                textField.style.display = 'block';
+            } else {
+                textField.style.display = 'none';
+            }
+        }
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+</html>

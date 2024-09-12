@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional CSS for login button */
+        body {
+            background-image: url('1.jpeg');
+            background-size: cover;
+            position: relative;
+        }
+
+        .container {
+            width: 400px;
+            height: 600px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-top: 30px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .login-button {
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: absolute;
+            top: 100px;
+            right: 150px;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styling for the select element */
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form id="signup-form">
+            <div class="form-group">
+                <label for="personName">Person's Name:</label>
+                <input type="text" id="personName" name="personName" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" name="contact">
+            </div>
+            <div class="form-group">
+                <label for="user-type">Select User Type:</label>
+                <select id="user-type" name="user-type">
+                    <option value="1">Property Seeker</option>
+                    <option value="0">Property Contact/Broker</option>
+                </select>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <!-- Heading for login -->
+    <div class="heading">Already Signed Up? Login</div>
+
+    <!-- Login button -->
+    <button class="login-button" onclick="openLoginPage()">Login</button>
+
+
+    <script>
+        function openLoginPage() {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("signup-form").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const jsonData = {};
+
+            // Convert FormData to JSON
+            for (const [key, value] of formData.entries()) {
+                jsonData[key] = value;
+            }
+            const userType = formData.get("user-type");
+            
+            if (userType === "1") {
+                role = "user"
+            } else {
+                role = "broker";
+            }
+            jsonData["role"] = role;
+
+            try {
+                // Send POST request to backend endpoint
+                const response = await fetch("http://localhost:3001/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to sign up");
+                }
+                const data = await response.json();
+
+                // Extract the token from the response
+                const token = data.token;
+                localStorage.setItem("token", token);
+                // Redirect to appropriate page based on user type
+                const userType = formData.get("user-type");
+                if (userType === "1") {
+                    window.location.href = "property_seeker_page.html";
+                } else {
+                    window.location.href = "broker_page.html";
+                }
+            } catch (error) {
+                console.error("Error signing up:", error);
+                // Handle error (e.g., display error message)
+            }
+        });
+    </script>
+</body>
+
+</html>

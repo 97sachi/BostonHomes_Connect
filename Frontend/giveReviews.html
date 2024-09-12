@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Give Review</title>
+    <style>
+        /* Global styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        .form-group input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="property_seeker_page.html">Back to Property Contact/Broker Main Page</a>
+        <button class="button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="container">
+        <h2>Give Review for Property ID: <span id="propertyId"></span></h2>
+        <form id="reviewForm">
+            <div class="form-group">
+                <label for="rating">Rating (out of 10):</label>
+                <input type="number" id="rating" name="rating" min="1" max="10" required>
+            </div>
+            <div class="form-group">
+                <label for="reviewText">Review Text:</label>
+                <textarea id="reviewText" name="reviewText" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit Review">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const propertyId = urlParams.get('propertyId');
+            document.getElementById('propertyId').textContent = propertyId;
+
+            const reviewForm = document.getElementById('reviewForm');
+            reviewForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const formData = new FormData(reviewForm);
+                const rating = formData.get('rating');
+                const reviewText = formData.get('reviewText');
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await fetch(`http://localhost:3001/${propertyId}/reviews`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ rating, review_text: reviewText })
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to submit review');
+                    }
+                    const responseData = await response.json();
+                    alert('Review submitted successfully');
+                    // Redirect to another page if needed
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    alert('Failed to submit review');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Details</title>
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            z-index: 1;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .area-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 20px;
+            width: 300px;
+            max-width: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .area-card h3 {
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        .area-card ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .area-card ul li {
+            margin-bottom: 5px;
+            color: #666666;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-crime-details,
+        .button-amenities {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .button-crime-details {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .button-crime-details:hover {
+            background-color: #d32f2f;
+        }
+
+        .button-amenities {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .button-amenities:hover {
+            background-color: #1976D2;
+        }
+
+        .area-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            padding: 20px;
+        }
+
+        .header a {
+            text-decoration: none;
+        }
+
+        .area-card.show-crime-details .details-container {
+            display: none;
+        }
+
+        .area-card.show-crime-details .crime-details-container {
+            display: block;
+        }
+
+        .area-card.show-amenities .details-container {
+            display: none;
+        }
+
+        .area-card.show-amenities .amenities-container {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="property_seeker_page.html">Back to Property Seeker Main Page</a>
+        <button id="logout-button" class="button">Logout</button>
+    </div>
+
+    <div class="button-container" id="button-container">
+        <button id="get-areas-button" class="button">See All Areas</button>
+    </div>
+
+    <div class="area-container hidden" id="area-list">
+        <!-- Area details will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById("get-areas-button").addEventListener("click", async (event) => {
+            event.preventDefault();
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch("http://localhost:3001/areas", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": "Bearer " + token
+                    }
+                });
+                const data = await response.json();
+
+                // Hide the button
+                document.getElementById("button-container").classList.add("hidden");
+
+                // Display the list of areas as cards
+                const areaListContainer = document.getElementById("area-list");
+                areaListContainer.classList.remove("hidden");
+                areaListContainer.innerHTML = ""; // Clear previous content
+                data.areas.forEach(area => {
+                    const areaCard = document.createElement("div");
+                    areaCard.classList.add("area-card");
+
+                    const areaName = document.createElement("h3");
+                    areaName.textContent = area.area_name;
+                    areaCard.appendChild(areaName);
+
+                    // Details container
+                    const detailsContainer = document.createElement("div");
+                    detailsContainer.classList.add("details-container");
+
+                    const detailsList = document.createElement("ul");
+                    const details = [
+                        `State: ${area.state}`,
+                        `Country: ${area.country}`,
+                        `Crime Rate: ${area.crime_rate}`,
+                        `Avg Property Price: $${area.avg_property_price}`,
+                        `Avg Square Footage: ${area.avg_square_footage} sqft`,
+                        `Transport Score: ${area.transport_score}`
+                    ];
+                    details.forEach(detail => {
+                        const detailItem = document.createElement("li");
+                        detailItem.textContent = detail;
+                        detailsList.appendChild(detailItem);
+                    });
+                    detailsContainer.appendChild(detailsList);
+                    areaCard.appendChild(detailsContainer);
+
+                    // Button for fetching crime details
+                    const crimeDetailsButton = document.createElement("button");
+                    crimeDetailsButton.textContent = "Crime Details";
+                    crimeDetailsButton.classList.add("button-crime-details");
+                    crimeDetailsButton.addEventListener("click", async () => {
+                        const crimeDetailsContainer = areaCard.querySelector('.crime-details-container');
+                        if (!areaCard.classList.contains('show-crime-details')) {
+                            try {
+                                const crimeDetailsList = document.createElement('ul');
+
+                                const crimeResponse = await fetch(`http://localhost:3001/crimes/${encodeURIComponent(area.area_name)}`, {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "authorization": "Bearer " + token
+                                    }
+                                });
+                                const crimeData = await crimeResponse.json();
+
+                                // Display crime details
+                                // Create list item for each crime detail
+                                crimeData.forEach(crime => {
+                                    const crimeDetailItem = document.createElement('li');
+
+                                    // Crime code (bold)
+                                    const crimeCodeLabel = document.createElement('strong');
+                                    crimeCodeLabel.textContent = 'Crime code: ';
+                                    crimeDetailItem.appendChild(crimeCodeLabel);
+                                    const crimeCode = document.createElement('span');
+                                    crimeCode.textContent = crime.crime_code;
+                                    crimeDetailItem.appendChild(crimeCode);
+
+                                    // Description (bold)
+                                    const crimeDescriptionLabel = document.createElement('strong');
+                                    crimeDescriptionLabel.textContent = ', Description: ';
+                                    crimeDetailItem.appendChild(crimeDescriptionLabel);
+                                    const crimeDescription = document.createElement('span');
+                                    crimeDescription.textContent = crime.crime_description;
+                                    crimeDetailItem.appendChild(crimeDescription);
+
+                                    // Frequency (bold)
+                                    const frequencyLabel = document.createElement('strong');
+                                    frequencyLabel.textContent = ', Frequency: ';
+                                    crimeDetailItem.appendChild(frequencyLabel);
+                                    const frequency = document.createElement('span');
+                                    frequency.textContent = crime.frequency_of_happening;
+                                    crimeDetailItem.appendChild(frequency);
+
+                                    // Append list item to the list
+                                    crimeDetailsList.appendChild(crimeDetailItem);
+                                });
+
+
+                                // Hide area details and show crime details
+                                areaCard.classList.add('show-crime-details');
+                                crimeDetailsContainer.appendChild(crimeDetailsList);
+                                detailsContainer.style.display = 'none';
+                                amenitiesButton.style.display = 'none';
+                                crimeDetailsButton.textContent = 'Show Area Details';
+                            } catch (error) {
+                                console.error("Error fetching crime details:", error);
+                            }
+                        } else {
+                            // Remove crime details and show area details
+                            areaCard.classList.remove('show-crime-details');
+                            detailsContainer.style.display = 'block';
+                            amenitiesButton.style.display = 'block';
+                            crimeDetailsButton.textContent = 'Crime Details';
+                            crimeDetailsContainer.innerHTML = ''; // Clear crime details
+                        }
+                    });
+                    areaCard.appendChild(crimeDetailsButton);
+
+                    // Button for fetching area amenities
+                    const amenitiesButton = document.createElement("button");
+                    amenitiesButton.textContent = "Area Amenities";
+                    amenitiesButton.classList.add("button-amenities");
+                    amenitiesButton.addEventListener("click", async () => {
+                        const amenitiesContainer = areaCard.querySelector('.amenities-container');
+                        if (!areaCard.classList.contains('show-amenities')) {
+                            try {
+                                const amenitiesResponse = await fetch(`http://localhost:3001/amenities/${encodeURIComponent(area.area_name)}`, {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "authorization": "Bearer " + token
+                                    }
+                                });
+                                const amenitiesData = await amenitiesResponse.json();
+
+                                // Display amenities
+                                const amenitiesList = document.createElement('ul');
+                                amenitiesData.forEach(amenity => {
+                                    const amenityItem = document.createElement('li');
+                                    amenityItem.innerHTML = `<strong>Amenity name:</strong> ${amenity.amenity_name}, <strong>Description:</strong> ${amenity.amenity_description}`;
+                                    amenitiesList.appendChild(amenityItem);
+                                });
+
+                                // Clear previous amenities and append new ones
+                                amenitiesContainer.innerHTML = '';
+                                amenitiesContainer.appendChild(amenitiesList);
+
+                                // Hide area details and show amenities
+                                areaCard.classList.add('show-amenities');
+                                detailsContainer.style.display = 'none';
+                                crimeDetailsButton.style.display = 'none';
+                                amenitiesButton.textContent = "Show Area Details";
+                            } catch (error) {
+                                console.error("Error fetching area amenities:", error);
+                            }
+                        } else {
+                            // Remove amenities and show area details
+                            areaCard.classList.remove('show-amenities');
+                            detailsContainer.style.display = 'block';
+                            crimeDetailsButton.style.display = 'block';
+                            amenitiesButton.textContent = "Area Amenities";
+                            amenitiesContainer.innerHTML = ''; // Clear amenities
+                        }
+                    });
+
+                    areaCard.appendChild(amenitiesButton);
+
+                    // Container for crime details and amenities
+                    const crimeDetailsContainer = document.createElement('div');
+                    crimeDetailsContainer.classList.add('crime-details-container', 'amenities-container');
+                    areaCard.appendChild(crimeDetailsContainer);
+
+                    areaListContainer.appendChild(areaCard);
+                });
+            } catch (error) {
+                console.error("Error fetching areas:", error);
+            }
+        });
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+
+</html>

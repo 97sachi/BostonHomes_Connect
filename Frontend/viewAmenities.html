@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Amenities</title>
+    <style>
+        /* Global styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Amenity card styles */
+        .amenity-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .amenity-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .amenity-card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="property_seeker_page.html">Back to Property Contact/Broker Main Page</a>
+        <button class="button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="container" id="amenityResults"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const propertyId = urlParams.get('propertyId');
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch(`http://localhost:3001/${propertyId}/amenities`, {
+                    headers: {
+                        "authorization": "Bearer " + token
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch amenities');
+                }
+                const amenitiesData = await response.json();
+                console.log(amenitiesData)
+                displayAmenities(amenitiesData);
+            } catch (error) {
+                console.error("Error fetching amenities:", error);
+            }
+        });
+
+        function displayAmenities(amenitiesData) {
+            const amenityResults = document.getElementById('amenityResults');
+            amenityResults.innerHTML = ''; // Clear previous results
+
+            amenitiesData.amenities.forEach(amenity => {
+                const amenityCard = document.createElement('div');
+                amenityCard.classList.add('amenity-card');
+                amenityCard.innerHTML = `
+                <h3>${amenity['Amenity Name']}</h3>
+                <p><strong>Description:</strong> ${amenity['Description']}</p>
+                `;
+                amenityResults.appendChild(amenityCard);
+            });
+        }
+    </script>
+</body>
+
+</html>

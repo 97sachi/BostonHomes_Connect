@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional CSS for login page */
+        body {
+            background-image: url('1.jpeg');
+            background-size: cover;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 90%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .login-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+        .signup-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        .signup-container {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+                <p id="error-message" style="color: red; display: none;"></p>
+                <a href="#" class="signup-link">Sign up</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const signupLink = document.querySelector(".signup-link");
+
+        document.getElementById("login-form").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const jsonData = {};
+
+            // Convert FormData to JSON
+            for (const [key, value] of formData.entries()) {
+                jsonData[key] = value;
+            }
+
+            try {
+                // Send POST request to backend endpoint
+                const response = await fetch("http://localhost:3001/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                if (!response.ok) {
+                    // Handle specific error cases
+                    const responseData = await response.json();
+                    if (responseData.message) {
+                        errorMessage = responseData.message;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                // Redirect to appropriate page based on user type
+                const data = await response.json();
+
+                // Extract the token from the response
+                const token = data.token;
+
+                // Store the token in localStorage
+                localStorage.setItem("token", token);
+                if (data.role === "broker") {
+                    window.location.href = "broker_page.html";
+                } else {
+                    window.location.href = "property_seeker_page.html";
+                }
+
+            } catch (error) {
+                const errorMessageElement = document.getElementById("error-message");
+                errorMessageElement.textContent = error.message;
+                errorMessageElement.style.display = "block";
+                // Handle error (e.g., display error message)
+            }
+        });
+
+        signupLink.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.href = "index.html";
+        });
+
+        function toggleSignupForm() {
+            loginForm.style.display = "none";
+            signupContainer.style.display = "block";
+        }
+    </script>
+</body>
+
+</html>

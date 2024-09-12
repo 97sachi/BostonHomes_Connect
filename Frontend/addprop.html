@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Property</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('addprop.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form container styles */
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 50%;
+            margin: auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 95%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: 40px;
+            height: 40px;
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Error and success message styles */
+        .error-message,
+        .success-message {
+            margin-top: 30px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class = "button" href="broker_page.html">Back to Property Contact/Broker Main Page</a>
+        <button class = "button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="container">
+    <div class="form-container">
+        <h2>Add Property Details</h2>
+        <form id="add-property-form">
+            <!-- Form fields go here -->
+            <!-- Example field -->
+            <div class="form-group">
+                <label for="property_id">Property ID:</label>
+                <input type="text" id="property_id" name="property_id" required>
+            </div>
+            <div class="form-group">
+                <label for="property_type">Property Type:</label>
+                <input type="text" id="property_type" name="property_type" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="bedrooms">Number of Bedrooms:</label>
+                <input type="number" id="bedrooms" name="bedrooms">
+            </div>
+            <div class="form-group">
+                <label for="bathrooms">Number of Bathrooms:</label>
+                <input type="number" id="bathrooms" name="bathrooms">
+            </div>
+            <div class="form-group">
+                <label for="square_footage">Square Footage:</label>
+                <input type="number" id="square_footage" name="square_footage" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="year_built">Year Built:</label>
+                <input type="number" id="year_built" name="year_built">
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" name="latitude" step="0.000001" required>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" name="longitude" step="0.000001" required>
+            </div>
+            <div class="form-group">
+                <label for="street_no">Street Number:</label>
+                <input type="number" id="street_no" name="street_no">
+            </div>
+            <div class="form-group">
+                <label for="street_name">Street Name:</label>
+                <input type="text" id="street_name" name="street_name">
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="zip_code">Zip Code:</label>
+                <input type="number" id="zip_code" name="zip_code" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" required>
+            </div>
+            <div class="form-group">
+                <label for="rent_buy">Rent or Buy:</label>
+                <select id="rent_buy" name="rent_buy" required>
+                    <option value="Rent">Rent</option>
+                    <option value="Buy">Buy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="is_available">Is Available:</label>
+                <input type="checkbox" id="is_available" name="is_available">
+            </div>
+            <div class="form-group">
+                <label for="areacode">Area Code:</label>
+                <input type="number" id="areacode" name="areacode" required>
+            </div>
+            <div class="form-group">
+                <label for="min_tenure">Minimum Tenure:</label>
+                <input type="text" id="min-tenure" name="min_tenure" required>
+            </div>
+            <button type="submit" class="submit-button">Add Property</button>
+        </form>
+        <div id="error-message" style="color: red;"></div>
+        <div id="success-message" style="color: green;"></div>
+    </div>
+</div>
+    <script>
+        document.getElementById("add-property-form").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const jsonData = {};
+            if (formData.get("is_available") === "on") {
+                formData.set("is_available", 1);
+            } else {
+                formData.set("is_available", 0);
+            }
+
+            // Convert FormData to JSON
+            for (const [key, value] of formData.entries()) {
+                jsonData[key] = value;
+            }
+            const token = localStorage.getItem("token");
+
+            try {
+                // Send POST request to backend endpoint
+                const response = await fetch("http://localhost:3001/add-property", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                
+                    if (!response.ok) {
+                        const responseData = await response.json();
+                        // Display error message
+                        document.getElementById("error-message").innerText = responseData.message;
+                        // Clear success message
+                        document.getElementById("success-message").innerText = "";
+                    } else {
+                        // Clear error message
+                        document.getElementById("error-message").innerText = "";
+                        // Display success message
+                        document.getElementById("success-message").innerText = "Property added successfully!";
+                        // Clear form fields
+                        document.getElementById("add-property-form").reset();
+                        
+                    }
+            } catch (error) {
+                console.error("Error signing up:", error);
+                // Handle error (e.g., display error message)
+            }
+        });
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+
+</html>

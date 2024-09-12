@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Requests</title>
+    <style>
+        /* Global styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .header .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Request card styles */
+        .request-card {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .request-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .request-card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .request-card .status {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        /* Update button styles */
+        .update-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .update-button:hover {
+            background-color: #0b7dda;
+        }
+
+        /* Form styles */
+        .request-form {
+            display: none;
+            z-index: 100;
+            width: 300px;
+            /* Adjust width as needed */
+        }
+
+
+        .request-form textarea,
+        .request-form select,
+        .request-form button {
+            width: calc(100% - 40px);
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .request-form textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .request-form button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .request-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="broker_page.html">Back to Broker Page</a>
+        <button class="button" id="logout-button">Logout</button>
+    </div>
+
+    <div class="container" id="requestResults"></div>
+
+    <script>
+        // Fetch requests on page load
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const response = await fetch(`http://localhost:3001/broker/requests`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests');
+                }
+                const responseData = await response.json();
+                displayRequests(responseData);
+            } catch (error) {
+                console.error("Error fetching requests:", error);
+            }
+        });
+
+        // Function to display requests
+        function displayRequests(requests) {
+            const requestResults = document.getElementById('requestResults');
+            requestResults.innerHTML = ''; // Clear previous results
+            let i = 0;
+            requests.forEach(request => {
+                i++;
+                const requestCard = document.createElement('div');
+                requestCard.classList.add('request-card');
+                requestCard.innerHTML = `
+                <h3>${request.seeker_id}</h3>
+                <p><strong>Property ID:</strong> ${request.property_id}</p>
+                <p><strong>Status:</strong> <span class="status">${request.approved_rejected}</span></p>
+                <p><strong>Request Date:</strong> ${new Date(request.customer_view_request_date).toLocaleDateString()}</p>
+                <p><strong>Is Complete:</strong> ${request.is_complete === 1 ? 'Yes' : 'No'}</p>
+                <p><strong>Intent:</strong> ${request.intent === null ? 'None':request.intent}</p>
+                <p><strong>Contact ID:</strong> ${request.contactid}</p>
+                <button class="update-button" onclick="showTextField(${i})">Update</button>
+                <form id="request-form-${i}" class="request-form" style="display: none;">
+                    <textarea id = "textarea-${i}" placeholder="Enter Intent" rows="6" cols="40" style="margin-top: 10px;"></textarea><br>
+                    <div style="margin-top: 10px;">
+                        <label for="is-complete-${i}">Is Complete:</label>
+                        <input type="checkbox" id="is-complete-${i}" style="transform: scale(2); margin-right: 10px;">
+                    </div>
+                    <select id="approved-rejected-${i}" style="margin-top: 10px;">
+                        <option value="1">Approve Request</option>
+                        <option value="-1">Reject Request</option>
+                    </select>
+                    <button style="margin-top: 10px;" onClick="submitForm('${request.property_id}', '${request.seeker_id}', '${request.contactid}', ${i})">Submit</button>
+                </form>
+                `;
+                requestResults.appendChild(requestCard);
+            });
+        }
+
+        // Function to show/hide form
+        function showTextField(id) {
+            const form = document.getElementById(`request-form-${id}`);
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        // Function to submit form data
+        async function submitForm(propertyId, seekerId, contactid, i) {
+            try {
+                const intent = document.getElementById(`textarea-${i}`).value;
+                const isComplete = document.getElementById(`is-complete-${i}`).checked ? 1 : 0;
+                const approvedRejectedInt = document.getElementById(`approved-rejected-${i}`).value;
+
+                const response = await fetch(`http://localhost:3001/broker/requests/${propertyId}/${seekerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ intent, isComplete, approvedRejectedInt })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update request');
+                }
+
+                const responseData = await response.json();
+                console.log(responseData.message); // Log response message
+                // Refresh the page or update UI as needed
+            } catch (error) {
+                console.error('Error updating request:', error);
+                // Handle errors
+            }
+        }
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+
+</html>
